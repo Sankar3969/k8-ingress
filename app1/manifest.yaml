@@ -25,7 +25,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: nginx-deployment
+  name: app1
 spec:
   selector: 
     tier: frontend
@@ -40,12 +40,22 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
     name: echoserver
-    namespace: echoserver
     annotations:
         alb.ingress.kubernetes.io/scheme: internet-facing
         alb.ingress.kubernetes.io/target-type: ip
+        alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:614019632196:certificate/c5f95617-c16a-44f9-9412-a667664a6afb
+        alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
+        alb.ingress.kubernetes.io/group.name: expense
         alb.ingress.kubernetes.io/tags: Environment=dev,Team=test
 spec:
     rules:
-    - http:
-        paths:
+  - host: "*.foo.com"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: service2
+            port:
+              number: 80
