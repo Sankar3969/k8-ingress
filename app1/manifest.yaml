@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: nginx
-        image: sankarjuvva/ingress:v1
+        image: sankarjuvva/ingress:v2
 ---
 apiVersion: v1
 kind: Service
