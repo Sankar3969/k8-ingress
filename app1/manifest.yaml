@@ -49,13 +49,13 @@ metadata:
         alb.ingress.kubernetes.io/tags: Environment=dev,Team=test
 spec:
     rules:
-  - host: "*.foo.com"
+  - host: "*.sankardevops.shop"
     http:
       paths:
       - pathType: Prefix
         path: "/"
         backend:
           service:
-            name: service2
+            name: app1
             port:
               number: 80
