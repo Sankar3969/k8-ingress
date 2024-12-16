@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment
+  labels:
+    tier: frontend
+    name: app2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      tier: frontend
+      name: app2
+  template:
+    metadata:
+       name: app2
+       labels:
+          tier: frontend
+          name: app2
+    spec:
+      containers:
+      - name: nginx
+        image: sankarjuvva/ingress:v3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: app2
+spec:
+  selector: 
+    tier: frontend
+    name: app2
+  ports:
+    - name: service-port
+      protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: app2
+    annotations:
+        alb.ingress.kubernetes.io/scheme: internet-facing
+        alb.ingress.kubernetes.io/target-type: ip
+        alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:614019632196:certificate/c5f95617-c16a-44f9-9412-a667664a6afb
+        alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
+        alb.ingress.kubernetes.io/group.name: expense
+        alb.ingress.kubernetes.io/tags: Environment=dev,Team=test
+spec:
+  ingressClassName: alb
+  rules:
+    - host: "app2.sankardevops.shop"
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name: app2
+                port:
+                  number: 80
