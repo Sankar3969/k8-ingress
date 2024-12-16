@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment
+  labels:
+    tier: frontend
+    name: app1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: frontend
+      name: app1
+  template:
+    metadata:
+       name: nginx-pod
+       labels:
+          tier: frontend
+          name: app1
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-deployment
+spec:
+  selector: 
+    tier: frontend
+    name: app1
+  ports:
+    - name: service-port
+      protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+    name: echoserver
+    namespace: echoserver
+    annotations:
+        alb.ingress.kubernetes.io/scheme: internet-facing
+        alb.ingress.kubernetes.io/target-type: ip
+        alb.ingress.kubernetes.io/tags: Environment=dev,Team=test
+spec:
+    rules:
+    - http:
+        paths:
